@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Описание ресторана -->
+<section class="mb-5">
+    <div class="text-center">
+        <h1 class="text-primary">Добро пожаловать в наш ресторан!</h1>
+        <p class="text-secondary fs-5">Мы рады предложить вам уютную атмосферу и изысканные блюда.</p>
+        <img src="https://picsum.photos/1200/400" class="img-fluid rounded mt-4 shadow" alt="Ресторан">
+    </div>
+</section>
+
+<!-- Перечень предоставляемых услуг -->
+<section class="mb-5">
+    <h2 class="text-primary text-center">Наши услуги</h2>
+    <div class="row text-center mt-4">
+        <div class="col-md-4">
+            <img src="https://picsum.photos/300/200?random=1" class="img-fluid rounded shadow" alt="Услуга 1">
+            <h4 class="text-secondary mt-3">Аренда залов</h4>
+            <p class="text-muted">Идеальное место для ваших мероприятий и праздников.</p>
+        </div>
+        <div class="col-md-4">
+            <img src="https://picsum.photos/300/200?random=2" class="img-fluid rounded shadow" alt="Услуга 2">
+            <h4 class="text-secondary mt-3">Организация банкетов</h4>
+            <p class="text-muted">Мы создаем незабываемую атмосферу.</p>
+        </div>
+        <div class="col-md-4">
+            <img src="https://picsum.photos/300/200?random=3" class="img-fluid rounded shadow" alt="Услуга 3">
+            <h4 class="text-secondary mt-3">Доставка блюд</h4>
+            <p class="text-muted">Попробуйте наши блюда, не выходя из дома.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Контактная информация -->
+<section class="mb-5 bg-light p-4 rounded shadow">
+    <h2 class="text-primary text-center">Контакты</h2>
+    <div class="row text-center mt-3">
+        <div class="col-md-6">
+            <h5 class="text-secondary">Телефон</h5>
+            <p class="text-muted">+7 123 456 7890</p>
+        </div>
+        <div class="col-md-6">
+            <h5 class="text-secondary">Адрес</h5>
+            <p class="text-muted">Ул. Центральная, 10, Москва</p>
+        </div>
+    </div>
+</section>
+
+<!-- Форма для обратной связи -->
+<section class="mb-5">
+    <h2 class="text-primary text-center">Свяжитесь с нами</h2>
+    <form action="#" method="post" class="mt-4 mx-auto" style="max-width: 600px;">
+        <div class="mb-3">
+            <label for="name" class="form-label text-secondary">Ваше имя</label>
+            <input type="text" class="form-control shadow-sm" id="name" placeholder="Введите ваше имя">
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label text-secondary">Ваш email</label>
+            <input type="email" class="form-control shadow-sm" id="email" placeholder="Введите ваш email">
+        </div>
+        <div class="mb-3">
+            <label for="message" class="form-label text-secondary">Сообщение</label>
+            <textarea class="form-control shadow-sm" id="message" rows="4" placeholder="Ваше сообщение"></textarea>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary px-5">Отправить</button>
+        </div>
+    </form>
+</section>
+{% endblock %}
