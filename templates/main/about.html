@@ -1,62 +1,46 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<!-- История ресторана -->
-<section class="mb-5 text-center">
-    <h1 class="text-primary display-4">История нашего ресторана</h1>
-    <hr class="w-25 mx-auto my-4">
-    <p class="text-secondary fs-5">
-        Наш ресторан был основан в 2020 году и с тех пор радует гостей изысканными блюдами и отличным сервисом.
-    </p>
-    <img src="https://picsum.photos/1200/400" class="img-fluid rounded shadow mt-4" alt="История ресторана">
-</section>
-
-<!-- Миссия и ценности -->
-<section class="mb-5 bg-light p-5 rounded shadow">
-    <h2 class="text-primary text-center">Миссия и ценности</h2>
-    <hr class="w-50 mx-auto my-4">
-    <p class="text-secondary fs-5 text-center">
-        Мы стремимся создавать уникальную атмосферу, где каждый гость чувствует себя особенным.
-    </p>
-    <div class="row mt-4">
-        <div class="col-md-4 text-center">
-            <i class="bi bi-heart text-danger display-3"></i>
-            <h4 class="text-primary mt-3">Любовь к гостям</h4>
+    <!-- История ресторана -->
+    <section class="mb-5 text-center">
+        <h1 class="text-primary display-4">История нашего ресторана</h1>
+        <hr class="w-25 mx-auto my-4">
+        <p class="text-secondary fs-5">{{ about_history.value }}</p>
+        <img src="{{ about_history_image.image.url }}" class="img-fluid rounded shadow mt-4" alt="История ресторана">
+    </section>
+    <!-- Миссия и ценности -->
+    <section class="mb-5 bg-light p-5 rounded shadow">
+        <h2 class="text-primary text-center">Миссия и ценности</h2>
+        <hr class="w-50 mx-auto my-4">
+        <p class="text-secondary fs-5 text-center">{{ about_mission.value }}</p>
+        <div class="row mt-4">
+            <div class="col-md-4 text-center">
+                <i class="bi bi-heart text-danger display-3"></i>
+                <h4 class="text-primary mt-3">{{ about_mission.value_1 }}</h4>
+            </div>
+            <div class="col-md-4 text-center">
+                <i class="bi bi-people text-success display-3"></i>
+                <h4 class="text-primary mt-3">{{ about_mission.value_2 }}</h4>
+            </div>
+            <div class="col-md-4 text-center">
+                <i class="bi bi-star text-warning display-3"></i>
+                <h4 class="text-primary mt-3">{{ about_mission.value_3 }}</h4>
+            </div>
         </div>
-        <div class="col-md-4 text-center">
-            <i class="bi bi-people text-success display-3"></i>
-            <h4 class="text-primary mt-3">Единая команда</h4>
+    </section>
+    <!-- Команда -->
+    <section class="mb-5">
+        <h2 class="text-primary text-center">Наша команда</h2>
+        <hr class="w-25 mx-auto my-4">
+        <div class="row text-center">
+            {% for staff in staffs %}
+                <div class="col-md-4">
+                <img src="{{ staff.image.url }}" class="rounded-circle shadow mb-3" alt="{{ staff.job_title }}">
+                <h4 class="text-primary">{{ staff.name }}</h4>
+                <p class="text-secondary">{{ staff.job_title }}</p>
+                <p class="text-muted">{{ staff.description }}</p>
+            </div>
+            {% endfor %}
         </div>
-        <div class="col-md-4 text-center">
-            <i class="bi bi-star text-warning display-3"></i>
-            <h4 class="text-primary mt-3">Высокие стандарты</h4>
-        </div>
-    </div>
-</section>
-
-<!-- Команда -->
-<section class="mb-5">
-    <h2 class="text-primary text-center">Наша команда</h2>
-    <hr class="w-25 mx-auto my-4">
-    <div class="row text-center">
-        <div class="col-md-4">
-            <img src="https://picsum.photos/150" class="rounded-circle shadow mb-3" alt="Шеф-повар">
-            <h4 class="text-primary">Анна Иванова</h4>
-            <p class="text-secondary">Шеф-повар</p>
-            <p class="text-muted">Создает уникальные блюда, вдохновленные мировой кухней.</p>
-        </div>
-        <div class="col-md-4">
-            <img src="https://picsum.photos/150?random=1" class="rounded-circle shadow mb-3" alt="Менеджер">
-            <h4 class="text-primary">Олег Смирнов</h4>
-            <p class="text-secondary">Менеджер</p>
-            <p class="text-muted">Гарантирует высокий уровень сервиса и организацию мероприятий.</p>
-        </div>
-        <div class="col-md-4">
-            <img src="https://picsum.photos/150?random=2" class="rounded-circle shadow mb-3" alt="Администратор">
-            <h4 class="text-primary">Екатерина Петрова</h4>
-            <p class="text-secondary">Администратор</p>
-            <p class="text-muted">Следит за комфортом и уютом каждого гостя.</p>
-        </div>
-    </div>
-</section>
+    </section>
 {% endblock %}

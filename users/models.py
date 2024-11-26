@@ -35,7 +35,7 @@ class User(AbstractUser):
 
     name = models.CharField(verbose_name='Имя', max_length=30, **NULLABLE)
     email = models.EmailField(verbose_name='Почта', unique=True)
-    phone_number = models.IntegerField(verbose_name='Телефон', unique=True)
+    phone = models.CharField(max_length=13, unique=True, verbose_name="Телефон")
 
     token_auf = models.CharField(max_length=255, **NULLABLE, verbose_name='Токен')
 
@@ -49,4 +49,4 @@ class User(AbstractUser):
         verbose_name_plural = 'пользователи'
 
     def __str__(self):
-        return f"{self.name}|{self.email}|{self.phone_number}"
+        return f"{self.name}|{self.email}|{self.phone}"

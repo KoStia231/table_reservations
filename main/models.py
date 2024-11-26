@@ -33,7 +33,6 @@ class SiteText(models.Model):
 class SiteImage(models.Model):
     class KeyChoices(models.TextChoices):
         MAIN_BANNER = "main_banner", "Баннер (Главная)"
-        MAIN_CONTACTS_IMAGE = "main_contacts_image", "Картинка для контактов (Главная)"
         ABOUT_HISTORY_IMAGE = "about_history_image", "История ресторана (О ресторане)"
         RESERVATION_BANNER = "reservation_banner", "Баннер страницы бронирования"
 
@@ -87,6 +86,7 @@ class Services(models.Model):
 class Feedback(models.Model):
     name = models.CharField(max_length=100, verbose_name="Имя")
     email = models.EmailField(verbose_name="Email")
+    phone = models.CharField(max_length=13, verbose_name="Телефон")
     message = models.TextField(verbose_name="Сообщение")
 
     def __str__(self):
