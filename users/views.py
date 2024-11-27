@@ -1,6 +1,7 @@
 import random
 import secrets
 import string
+import re
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
@@ -43,6 +44,13 @@ class UserRegisterView(CreateView):
     def form_valid(self, form):
         """Отправка пользователю письма с подтверждением регистрации"""
         user = form.save()
+        phone = form.cleaned_data.get('phone')
+        regular = re.sub(r'\D', '', phone)
+        if len(regular) != 10:
+            form.add_error('phone', 'Номер телефона должен содержать ровно 10 цифр.')
+            return super().form_invalid(form)
+        formatted_phone = f"+7{regular}"
+        user.phone = formatted_phone
         user.is_active = False
         token_auf = secrets.token_hex(16)  # генерит токен
         user.token_auf = token_auf
