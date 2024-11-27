@@ -14,6 +14,14 @@ class FeedbackFormUserAuf(forms.ModelForm):
             'message': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Введите ваше сообщение'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(FeedbackFormUserAuf, self).__init__(*args, **kwargs)
+        if user and user.is_authenticated:
+            self.fields['name'].initial = user.name
+            self.fields['email'].initial = user.email
+            self.fields['phone'].initial = user.phone
+
 
 class FeedbackForm(forms.ModelForm):
     phone = forms.CharField(

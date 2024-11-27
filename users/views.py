@@ -10,6 +10,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, DetailView
 
 from config.settings import EMAIL_HOST_USER
+from table_rezerv.models import Reservation
 from users.forms import UserLoginForm
 from users.forms import UserRegisterForm
 from users.models import User
@@ -27,13 +28,9 @@ class UserLoginView(LoginView):
     form_class = UserLoginForm
     redirect_authenticated_user = True  # авторизовать пользователя при успешном входе
 
-
-def index(request):
-    """Страничка главной страницы"""
-    if request.user.is_authenticated:  # переход в профиль если авторизован
-        return redirect(reverse('users:profile', kwargs={'pk': request.user.pk}))
-    else:  # на регистрацию если не авторизован
-        return redirect('users:login')
+    def get_success_url(self):
+        user_pk = self.request.user.pk
+        return reverse('users:profile', kwargs={'pk': user_pk})
 
 
 class UserRegisterView(CreateView):
@@ -63,7 +60,7 @@ class UserRegisterView(CreateView):
 
 def verify_mail(request, token_auf):
     """Подтверждение регистрации переход по ссылке из письма и редирект на страницу входа"""
-    user = get_object_or_404(User, token_auf=token_auf)  # получить пользователя по токен
+    user = get_object_or_404(User, token_auf=token_auf)  # получить пользователя токен
     user.is_active = True
     user.save()
     return redirect(reverse('users:login'))
@@ -77,7 +74,7 @@ def reset_password(request):
 
         if not User.objects.filter(email=email).exists():
             # это чтобы яндекс не пытался отправить письмо на не существующий адрес
-            return render(request, template_name='users/reset_password.html') #доделать!!!!!!!!!!!!!!
+            return render(request, template_name='users/reset_password.html')
         else:
             user = get_object_or_404(User, email=email)
             new_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))  # генерит новый пароль
@@ -100,8 +97,6 @@ class UserProfileView(MyLoginRequiredMixin, DetailView):
     template_name = 'users/profile.html'
 
     def get_context_data(self, **kwargs):
-        """контекст"""
         context = super().get_context_data(**kwargs)
-        user = self.request.user
-        context['user_'] = user
+        context['reservations'] = Reservation.objects.filter(customer=self.request.user)
         return context

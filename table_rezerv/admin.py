@@ -11,6 +11,6 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(Reservation)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'status', 'table', 'customer', 'date', 'time', 'duration')
-    search_fields = ('id', 'status', 'table', 'customer', 'date', 'time', 'duration')
-    list_filter = ('id', 'status', 'table', 'customer', 'date', 'time', 'duration')
+    list_display = ('id', 'status', 'table', 'customer', 'date', 'time', 'duration', 'end_time')
+    search_fields = ('id', 'status', 'table', 'customer', 'date', 'time', 'duration', 'end_time')
+    list_filter = ('id', 'status', 'table', 'customer', 'date', 'time', 'duration', 'end_time')

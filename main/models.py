@@ -9,6 +9,7 @@ class SiteText(models.Model):
         MAIN_CONTACTS = "main_contacts", "Контактная информация (Главная)"
         ABOUT_HISTORY = "about_history", "История ресторана (О ресторане)"
         ABOUT_MISSION = "about_mission", "Миссия и ценности (О ресторане)"
+        SITE_TITLE = "site_title", "Название сайта"
 
     key = models.CharField(
         max_length=50,
@@ -94,4 +95,4 @@ class Feedback(models.Model):
 
     class Meta:
         verbose_name = "Обращение"
-        verbose_name_plural = "Обращения"
+        verbose_name_plural = "Обращения и системные уведомления \"SYSTEM\""

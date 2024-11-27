@@ -5,106 +5,42 @@
             <div class="col-md-4">
                 <!-- Поля профиля пользователя -->
                 <h2>Профиль</h2>
-                <p><strong>Имя:</strong> {{ user.first_name }}</p>
-                <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
+                <p><strong>Имя:</strong> {{ user.name }}</p>
                 {% if user == request.user %}
-                    <p><strong>Номер телефона:</strong> {{ user.phone_number }}</p>
+                    <p><strong>Номер телефона:</strong> {{ user.phone }}</p>
                     <p><strong>Email:</strong> {{ user.email }}</p>
-                    <a class="p-2 btn btn-outline-primary" href="{% url 'users:profile_update' user.pk %}">
-                        Редактировать профиль
-                    </a>
-                {% else %}
-                    <p><strong>Номер телефона:</strong> Доступно только владельцу профиля</p>
-                    <p><strong>Email:</strong> Доступно только владельцу профиля</p>
                 {% endif %}
             </div>
+            <div class="card-body">
 
-            <div class="card mt-5">
-                <div class="card-header text-center">
-                    {% if not user == request.user %}
-                        <h1 class="display-4">Список рассылок пользователя</h1>
-                    {% endif %}
+                {% for rez in reservations %}
+                    <p class="lead">Бронь {{ rez.pk }}, столик {{ rez.table.number }}, дата {{ rez.date }}
+                        {% if rez.status == 'pending' %}
+                            <span class="badge bg-primary">Ожидает подтверждения</span>
+                        {% elif rez.status == 'confirmed' %}
+                            <span class="badge bg-success">Подтверждена</span>
+                        {% elif rez.status == 'cancelled' %}
+                            <span class="badge bg-danger">Отменена</span>
+                        {% elif rez.status == 'completed' %}
+                            <span class="badge bg-danger">Завершена</span>
+                        {% endif %}
 
-                    {% if user == request.user %}
-                        <h1 class="display-4">Мои рассылки</h1>
+                        {% if rez.status == 'pending' %}
+                            <a href="{% url 'table_rezerv:reservation_confirm' rez.pk %}" style="color:white">
+                                <span class="badge bg-success m-2">Подтвердить</span>
+                            </a>
+                            <a href="{% url 'table_rezerv:reservation_change' rez.pk %}" style="color:white">
+                                <span class="badge bg-success m-2">Изменить</span>
+                            </a>
+                        {% endif %}
 
-                        <a class="p-2 btn btn-outline-primary" href="{% url 'mail:mailing_create' %}">
-                            Создать рассылку</a>
-
-                        <a class="p-2 btn btn-outline-primary" href="{% url 'mail:client_create' %}">
-                            Создать клиента</a>
-
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                Клиенты
-                            </button>
-                            <ul class="dropdown-menu">
-                                {% for client in client_list %}
-                                    <li><a class="dropdown-item"
-                                           href="{% url 'mail:client_detail' client.pk %}">{{ client.name }}</a>
-                                    </li>
-                                {% endfor %}
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="{% url 'mail:client_list' %}">Все клиенты</a></li>
-                            </ul>
-                        </div>
-
-                        <a class="p-2 btn btn-outline-primary" href="{% url 'mail:message_create' %}">
-                            Создать сообщение</a>
-
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                Сообщения
-                            </button>
-                            <ul class="dropdown-menu">
-                                {% for message in message_list %}
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="{% url 'mail:message_detail' message.pk %}">{{ message.title }}</a>
-                                    </li>
-                                {% endfor %}
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="{% url 'mail:message_list' %}">Все сообщения</a></li>
-                            </ul>
-                        </div>
-
-                    {% endif %}
-                </div>
-                <div class="card-body">
-
-                    {% for mailing in mailing_list %}
-                        <p class="lead">Рассылка {{ mailing.start_date }}
-                            {% if mailing.status == 'C' %}
-                                <span class="badge bg-primary">создана</span>
-                            {% elif mailing.status == 'R' %}
-                                <span class="badge bg-success">активна</span>
-                            {% elif mailing.status == 'F' %}
-                                <span class="badge bg-danger">остановлена</span>
-                            {% endif %}
-
-                            {% if user == request.user %}
-                                <a href="{% url 'mail:mailing_detail' mailing.pk %}" style="color:white">
-                                    <span class="badge bg-primary m-2">подробнее</span>
-                                </a>
-
-                                <a href="{% url 'mail:mailing_update' mailing.pk %}" style="color:white">
-                                    <span class="badge bg-primary m-2">редактировать</span>
-                                </a>
-
-                                <a href="{% url 'mail:mailing_delete' mailing.pk %}">
-                                    <span class="badge bg-danger ">удалить</span>
-                                </a>
-                            {% endif %}
-
-                        </p>
-                    {% endfor %}
-                </div>
+                        {% if rez.status == 'pending' or rez.status == 'confirmed' %}
+                            <a href="{% url 'table_rezerv:reservation_cancel' rez.pk %}" style="color:white">
+                                <span class="badge bg-danger m-2">Отменить</span>
+                            </a>
+                        {% endif %}
+                    </p>
+                {% endfor %}
             </div>
         </div>
     </div>

@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime, timedelta
 
 from users.models import NULLABLE
 from users.models import User
@@ -39,6 +40,7 @@ class Reservation(models.Model):
     date = models.DateField(verbose_name="Дата бронирования")
     time = models.TimeField(verbose_name="Время бронирования")
     duration = models.PositiveIntegerField(verbose_name="Продолжительность (в часах)", default=1)
+    end_time = models.DateTimeField(verbose_name="Время окончания брони", )
     status = models.CharField(max_length=10, choices=Status.choices, default='pending', verbose_name="Статус брони")
 
     def __str__(self):

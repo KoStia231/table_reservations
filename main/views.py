@@ -1,8 +1,10 @@
 import re
-from django.views.generic import CreateView, TemplateView
-from django.urls import reverse
 
-from main.forms import FeedbackForm
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.views.generic import CreateView, TemplateView
+
+from main.forms import FeedbackForm, FeedbackFormUserAuf
 from main.models import (
     SiteImage, SiteText,
     Staff, Services, Feedback
@@ -10,23 +12,38 @@ from main.models import (
 
 
 class IndexView(CreateView):
-    """Отображение главной страницы сайта"""
+    """Отображение главной страницы"""
     model = Feedback
     template_name = 'main/index.html'
-    form_class = FeedbackForm
+
+    def get_form_class(self):
+        """Разные формы авторизованным и не авторизованным пользователям"""
+        if self.request.user.is_authenticated:
+            return FeedbackFormUserAuf
+        return FeedbackForm
+
+    def get_form_kwargs(self):
+        """Передаёт user в форму, только для авторизованных пользователей"""
+        kwargs = super().get_form_kwargs()
+        if self.request.user.is_authenticated:
+            kwargs['user'] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         """Обработка и сохранение формы с валидацией номера телефона"""
-        if form.is_valid():
-            feedback = form.save(commit=False)
-            phone = form.cleaned_data.get('phone')
-            regular = re.sub(r'\D', '', phone)
-            if len(regular) != 10:
-                form.add_error('phone', 'Номер телефона должен содержать ровно 10 цифр.')
-                return super().form_invalid(form)
-            formatted_phone = f"+7{regular}"
-            feedback.phone = formatted_phone
-            feedback.save()
+        if self.request.user.is_authenticated:
+            return redirect(self.get_success_url())
+        else:
+            if form.is_valid():
+                feedback = form.save(commit=False)
+                phone = form.cleaned_data.get('phone')
+                regular = re.sub(r'\D', '', phone)
+                if len(regular) != 10:
+                    form.add_error('phone', 'Номер телефона должен содержать ровно 10 цифр.')
+                    return super().form_invalid(form)
+                formatted_phone = f"+7{regular}"
+                feedback.phone = formatted_phone
+                feedback.save()
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -43,7 +60,7 @@ class IndexView(CreateView):
 
 
 class AboutView(TemplateView):
-    """Отображение главной страницы сайта"""
+    """Отображение О нас страницы"""
     template_name = 'main/about.html'
 
     def get_context_data(self, **kwargs):

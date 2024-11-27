@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <section class="mb-5">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6">
+                    <h2 class="text-primary mb-4 d-flex justify-content-between align-items-center">
+                        <span class="text-center">Наши столики</span>
+                        <!-- Кнопка для скрытия/показа формы -->
+                        <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#filterForm" aria-expanded="false" aria-controls="filterForm">
+                            Фильтр
+                        </button>
+                    </h2>
+
+                    <!-- Форма  -->
+                    <div class="collapse mt-3" id="filterForm">
+                        <form method="get" class="mb-4" enctype="multipart/form-data">
+                            {{ filter_form.as_p }}
+                            <button type="submit" class="btn btn-primary w-100 mt-3">Применить фильтр</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row g-4">
+            {% for table in object_list %}
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="card shadow-sm border-0 rounded-3 h-100">
+                        <img src="{{ table.image.url }}" class="card-img-top img-fluid rounded-top"
+                             alt="Столик {{ table.number }}">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-secondary">Столик {{ table.number }}</h5>
+                            <p class="card-text text-muted">{{ table.description }}</p>
+                            <p class="card-text text-muted">Количество мест: {{ table.seats }}</p>
+                            <a href="{% url 'table_rezerv:reservation_create' table.pk %}"
+                               class="btn btn-outline-primary mt-auto btn-reserve">Забронировать</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}
