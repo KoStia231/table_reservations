@@ -23,7 +23,6 @@ class UserRegisterForm(CustomFormMixin, UserCreationForm):
         required=True,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Введите ваш телефон',
             'pattern': r'\d{10}',  # Валидация через HTML5 pattern (только 10 цифр)
             'title': 'Номер телефона без +7 и без 8',
             'required': 'required',
