@@ -18,6 +18,18 @@ class CustomFormMixin:
 
 class UserRegisterForm(CustomFormMixin, UserCreationForm):
     # Наследуемся от специальной формы UserCreationForm из модуля auth
+    phone = forms.CharField(
+        max_length=13,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Введите ваш телефон',
+            'pattern': r'\d{10}',  # Валидация через HTML5 pattern (только 10 цифр)
+            'title': 'Номер телефона без +7 и без 8',
+            'required': 'required',
+        }),
+    )
+
     class Meta:
         model = User
         # Указываем новую кастомную модель
