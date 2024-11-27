@@ -2,20 +2,22 @@ from datetime import datetime
 
 from django import forms
 
+from users.models import User
 from .models import Reservation, Table
 
 
 class ReservationCreateForm(forms.ModelForm):
+
     class Meta:
         model = Reservation
         fields = ['table', 'date', 'time', 'duration', 'status', 'customer']
         widgets = {
-            'table': forms.Select(attrs={'class': 'form-control', 'readonly': True}),
+            'table': forms.Select(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'date': forms.DateInput(attrs={'class': 'form-control'}),
             'time': forms.TimeInput(attrs={'class': 'form-control'}),
             'duration': forms.NumberInput(attrs={'class': 'form-control'}),
-            'status': forms.Select(attrs={'class': 'form-control', 'readonly': True}),
-            'customer': forms.Select(attrs={'class': 'form-control', 'readonly': True}),
+            'status': forms.Select(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'customer': forms.Select(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -27,8 +29,10 @@ class ReservationCreateForm(forms.ModelForm):
             self.fields['table'].initial = Table.objects.get(pk=table_pk)
 
         if user and user.is_authenticated:
+            pk = user.pk
+            self.fields['customer'].queryset = User.objects.filter(pk=pk)
             self.fields['customer'].initial = user
-            self.fields['status'].initial = Reservation.Status.PENDING
+            self.fields['status'].choices = [(Reservation.Status.PENDING, 'Ожидает подтверждения')]
 
         self.fields['date'].initial = datetime.now().date()
         self.fields['time'].initial = datetime.now().time()

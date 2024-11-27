@@ -8,9 +8,9 @@ class FeedbackFormUserAuf(forms.ModelForm):
         model = Feedback
         fields = ['name', 'email', 'phone', 'message', ]
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'readonly': True}),
-            'email': forms.EmailInput(attrs={'class': 'form-control', 'readonly': True}),
-            'phone': forms.TextInput(attrs={'class': 'form-control', 'readonly': True}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'message': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Введите ваше сообщение'}),
         }
 
