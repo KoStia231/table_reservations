@@ -5,7 +5,7 @@ from pathlib import Path
 from celery.schedules import crontab
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path='.env')  # для docker .env.prod без docker .env
+load_dotenv(dotenv_path='.env.prod')  # для docker .env.prod без docker .env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
