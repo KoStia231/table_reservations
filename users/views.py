@@ -1,7 +1,7 @@
 import random
+import re
 import secrets
 import string
-import re
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
@@ -43,13 +43,19 @@ class UserRegisterView(CreateView):
 
     def form_valid(self, form):
         """Отправка пользователю письма с подтверждением регистрации"""
-        user = form.save()
         phone = form.cleaned_data.get('phone')
         regular = re.sub(r'\D', '', phone)
         if len(regular) != 10:
             form.add_error('phone', 'Номер телефона должен содержать ровно 10 цифр.')
             return super().form_invalid(form)
         formatted_phone = f"+7{regular}"
+
+        existing_user = User.objects.filter(phone=formatted_phone).first()
+        if existing_user:
+            form.add_error('phone', 'Этот номер телефона уже зарегистрирован.')
+            return super().form_invalid(form)
+
+        user = form.save(commit=False)
         user.phone = formatted_phone
         user.is_active = False
         token_auf = secrets.token_hex(16)  # генерит токен
@@ -58,11 +64,12 @@ class UserRegisterView(CreateView):
         host = self.request.get_host()  # это получение хоста
         url = f'http://{host}/users/verify/{token_auf}'
         send_mail(
-            subject=f'Подтверждение регистрации',
+            subject='Подтверждение регистрации',
             message=f'Для подтверждения регистрации перейдите по ссылке: {url}',
             from_email=EMAIL_HOST_USER,
             recipient_list=[user.email],
         )
+
         return super().form_valid(form)
 
 
