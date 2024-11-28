@@ -1,11 +1,12 @@
 from django.core.mail import send_mail
 from django.db.models import Q
-
+from celery import shared_task
 from config.settings import EMAIL_HOST_USER
 from main.models import Feedback
 from table_rezerv.models import Reservation
 
 
+@shared_task
 def send_email_reservation_to_cancelled(user_email, table, data, time):
     """
         Отправляет уведомление на электронную почту пользователя о том, что его бронь была отменена.

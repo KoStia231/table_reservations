@@ -21,7 +21,7 @@ def check_reservations():
             table.status = Table.Status.FREE
             table.save()
             # Отправка письма и если ошибка отчет в базе с пометкой SYSTEM
-            send_email_reservation_to_cancelled(
+            send_email_reservation_to_cancelled.delay(
                 user_email=reservation.customer.email,
                 table=table,
                 data=reservation.date,
