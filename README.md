@@ -15,4 +15,3 @@ docker-compose up --build
 ###### [entrypoint.sh](entrypoint.sh) это костыль чтобы не было ошибок при билде контейнера
 
 ---
-
