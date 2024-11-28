@@ -1,5 +1,4 @@
 from django.db import models
-from datetime import datetime, timedelta
 
 from users.models import NULLABLE
 from users.models import User

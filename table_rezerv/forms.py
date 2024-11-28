@@ -23,6 +23,7 @@ class ReservationCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         table_pk = kwargs.pop('table_pk', None)
         user = kwargs.pop('user', None)
+        request = kwargs.pop('request', None)
         super(ReservationCreateForm, self).__init__(*args, **kwargs)
         if table_pk:
             self.fields['table'].queryset = Table.objects.filter(pk=table_pk)
@@ -34,8 +35,16 @@ class ReservationCreateForm(forms.ModelForm):
             self.fields['customer'].initial = user
             self.fields['status'].choices = [(Reservation.Status.PENDING, 'Ожидает подтверждения')]
 
-        self.fields['date'].initial = datetime.now().date()
-        self.fields['time'].initial = datetime.now().time()
+        # Автозаполнение формы на основе фильтра из сессии
+        if request:
+            filter_date = request.session.get('filter_date')
+            filter_time = request.session.get('filter_time')
+            self.fields['date'].initial = filter_date or datetime.now().date()
+            self.fields['time'].initial = filter_time or datetime.now().strftime('%H:%M')
+        else:
+            self.fields['date'].initial = datetime.now().date()
+            self.fields['time'].initial = datetime.now().strftime('%H:%M')
+
         self.fields['duration'].initial = 1
 
 
@@ -85,7 +94,7 @@ class TableFilterForm(forms.Form):
 
     time = forms.TimeField(
         initial=datetime.now().strftime('%H:%M'),
-        widget=forms.TimeInput(attrs={'type': 'time', 'class': 'form-control', 'min': datetime.now().strftime('%H:%M')}),
+        widget=forms.TimeInput(attrs={'type': 'time', 'class': 'form-control', 'init': datetime.now().strftime('%H:%M')}),
         required=True,
         label='Выберите время'
     )
@@ -98,7 +107,10 @@ class TableFilterForm(forms.Form):
 
     def clean_time(self):
         selected_time = self.cleaned_data['time']
+        selected_date = self.cleaned_data['date']
         now = datetime.now()
-        if selected_time < now.time():
-            raise forms.ValidationError('Время не может быть в прошлом.')
+        if selected_date == now.date():
+            if selected_time < now.time():
+                raise forms.ValidationError('Время не может быть в прошлом относительно текущего времени.')
+
         return selected_time

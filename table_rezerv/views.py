@@ -11,6 +11,7 @@ from table_rezerv.forms import (
 )
 from table_rezerv.models import Table, Reservation
 from users.views import MyLoginRequiredMixin
+from table_rezerv.utils.utils import is_table_available
 
 
 class TableView(MyLoginRequiredMixin, ListView):
@@ -29,6 +30,10 @@ class TableView(MyLoginRequiredMixin, ListView):
         if filter_form.is_valid():
             filter_date = filter_form.cleaned_data['date']
             filter_time = filter_form.cleaned_data['time']
+            # Сохранение времени и даты из формы в request.session
+            self.request.session['filter_date'] = str(filter_date)
+            self.request.session['filter_time'] = str(filter_time)
+
             naive_filter_datetime = datetime.combine(filter_date, filter_time)
             filter_datetime = make_aware(naive_filter_datetime)
             # Исключение столиков с пересекающимися бронированиями
@@ -56,27 +61,23 @@ class ReservationCreateView(MyLoginRequiredMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request  # Передача request.session
         kwargs['table_pk'] = self.kwargs['table_pk']
         kwargs['user'] = self.request.user
         return kwargs
 
     def form_valid(self, form):
+        # Очистка данных из сессии при создании брони
+        self.request.session.pop('filter_date', None)
+        self.request.session.pop('filter_time', None)
+
         date, time = form.cleaned_data['date'], form.cleaned_data['time']
         duration = form.cleaned_data['duration']
         start_datetime = make_aware(datetime.combine(date, time))
         end_datetime = start_datetime + timedelta(hours=duration)
-
-        # Проверка свободен ли столик в это время
         table = Table.objects.get(id=self.kwargs['table_pk'])
-        conflicting_reservations = Reservation.objects.filter(
-            Q(table=table) &
-            Q(status__in=['confirmed', 'pending']) &
-            (
-                (Q(date=date) & Q(time__lt=end_datetime.time()) & Q(end_time__gt=start_datetime))
-            )
-        )
-
-        if conflicting_reservations.exists():
+        # Проверка свободен ли столик в это время
+        if not is_table_available(table, date, start_datetime, end_datetime):
             form.add_error(None, 'Этот столик уже забронирован на выбранное время.')
             return self.form_invalid(form)
 
@@ -110,8 +111,17 @@ class ReservationChangeView(ReservationBaseView):
         reservation = form.save(commit=False)
         date, time = form.cleaned_data['date'], form.cleaned_data['time']
         duration = form.cleaned_data['duration']
-        reservation.end_time = make_aware(datetime.combine(date, time)) + timedelta(hours=duration)
+        start_datetime = make_aware(datetime.combine(date, time))
+        end_datetime = start_datetime + timedelta(hours=duration)
+        table = reservation.table
+        # Проверка свободен ли столик в это время
+        if not is_table_available(table, date, start_datetime, end_datetime):
+            form.add_error(None, 'Этот столик уже забронирован на выбранное время.')
+            return self.form_invalid(form)
+
+        reservation.end_time = end_datetime
         reservation.save()
+
         return super().form_valid(form)
 
 
