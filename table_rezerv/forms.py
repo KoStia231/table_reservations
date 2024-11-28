@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django import forms
 
@@ -6,15 +6,47 @@ from users.models import User
 from .models import Reservation, Table
 
 
-class ReservationCreateForm(forms.ModelForm):
+class TableFilterForm(forms.Form):
+
+    date = forms.DateField(
+        initial=datetime.now(),
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'min': datetime.today().date()}),
+        required=True,
+        label='Выберите дату'
+    )
+
+    time = forms.TimeField(
+        initial=datetime.now().strftime('%H:%M'),
+        widget=forms.TimeInput(
+            attrs={'type': 'time', 'class': 'form-control', 'init': datetime.now().strftime('%H:%M')}),
+        required=True,
+        label='Выберите время'
+    )
+
+    def clean_date(self):
+        selected_date = self.cleaned_data['date']
+        if selected_date < datetime.today().date():
+            raise forms.ValidationError('Дата не может быть в прошлом.')
+        return selected_date
+
+    def clean_time(self):
+        selected_time = self.cleaned_data['time']
+        selected_date = self.cleaned_data['date']
+        now = datetime.now()
+        if selected_date == now.date():
+            if selected_time < now.time():
+                raise forms.ValidationError('Время не может быть в прошлом относительно текущего времени.')
+
+        return selected_time
+
+
+class ReservationCreateForm(TableFilterForm, forms.ModelForm):
 
     class Meta:
         model = Reservation
         fields = ['table', 'date', 'time', 'duration', 'status', 'customer']
         widgets = {
             'table': forms.Select(attrs={'class': 'form-control', 'readonly': 'readonly'}),
-            'date': forms.DateInput(attrs={'class': 'form-control'}),
-            'time': forms.TimeInput(attrs={'class': 'form-control'}),
             'duration': forms.NumberInput(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'customer': forms.Select(attrs={'class': 'form-control', 'readonly': 'readonly'}),
@@ -40,22 +72,20 @@ class ReservationCreateForm(forms.ModelForm):
             filter_date = request.session.get('filter_date')
             filter_time = request.session.get('filter_time')
             self.fields['date'].initial = filter_date or datetime.now().date()
-            self.fields['time'].initial = filter_time or datetime.now().strftime('%H:%M')
+            self.fields['time'].initial = filter_time or (datetime.now() + timedelta(minutes=2)).strftime('%H:%M')
         else:
             self.fields['date'].initial = datetime.now().date()
-            self.fields['time'].initial = datetime.now().strftime('%H:%M')
+            self.fields['time'].initial = (datetime.now() + timedelta(minutes=2)).strftime('%H:%M')
 
         self.fields['duration'].initial = 1
 
 
-class ReservationChangeForm(forms.ModelForm):
+class ReservationChangeForm(TableFilterForm, forms.ModelForm):
     class Meta:
         model = Reservation
         fields = ['table', 'date', 'time', 'duration', ]
         widgets = {
             'table': forms.Select(attrs={'class': 'form-control'}),
-            'date': forms.DateInput(attrs={'class': 'form-control'}),
-            'time': forms.TimeInput(attrs={'class': 'form-control'}),
             'duration': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
@@ -82,35 +112,3 @@ class ReservationCancelForm(forms.ModelForm):
         fields = ['status']
 
     status = forms.ChoiceField(choices=STATUS_CHOICES, initial='cancelled', label='Статус бронирования')
-
-
-class TableFilterForm(forms.Form):
-    date = forms.DateField(
-        initial=datetime.now(),
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'min': datetime.today().date()}),
-        required=True,
-        label='Выберите дату'
-    )
-
-    time = forms.TimeField(
-        initial=datetime.now().strftime('%H:%M'),
-        widget=forms.TimeInput(attrs={'type': 'time', 'class': 'form-control', 'init': datetime.now().strftime('%H:%M')}),
-        required=True,
-        label='Выберите время'
-    )
-
-    def clean_date(self):
-        selected_date = self.cleaned_data['date']
-        if selected_date < datetime.today().date():
-            raise forms.ValidationError('Дата не может быть в прошлом.')
-        return selected_date
-
-    def clean_time(self):
-        selected_time = self.cleaned_data['time']
-        selected_date = self.cleaned_data['date']
-        now = datetime.now()
-        if selected_date == now.date():
-            if selected_time < now.time():
-                raise forms.ValidationError('Время не может быть в прошлом относительно текущего времени.')
-
-        return selected_time

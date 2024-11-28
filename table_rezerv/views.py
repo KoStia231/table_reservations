@@ -76,11 +76,15 @@ class ReservationCreateView(MyLoginRequiredMixin, CreateView):
         start_datetime = make_aware(datetime.combine(date, time))
         end_datetime = start_datetime + timedelta(hours=duration)
         table = Table.objects.get(id=self.kwargs['table_pk'])
-        # Проверка свободен ли столик в это время
-        if not is_table_available(table, date, start_datetime, end_datetime):
-            form.add_error(None, 'Этот столик уже забронирован на выбранное время.')
+
+        if start_datetime < make_aware(datetime.now()):
+            form.add_error(None, 'Время или дата не может быть в прошлом')
             return self.form_invalid(form)
 
+        # Проверка свободен ли столик в это время
+        if is_table_available(table, date, start_datetime, end_datetime):
+            form.add_error(None, 'Этот столик уже забронирован на выбранное время.')
+            return self.form_invalid(form)
         reservation = form.save(commit=False)
         reservation.customer = self.request.user
         reservation.status = Reservation.Status.PENDING
@@ -114,8 +118,13 @@ class ReservationChangeView(ReservationBaseView):
         start_datetime = make_aware(datetime.combine(date, time))
         end_datetime = start_datetime + timedelta(hours=duration)
         table = reservation.table
+
+        if start_datetime < make_aware(datetime.now()):
+            form.add_error(None, 'Время или дата не может быть в прошлом')
+            return self.form_invalid(form)
+
         # Проверка свободен ли столик в это время
-        if not is_table_available(table, date, start_datetime, end_datetime):
+        if is_table_available(table, date, start_datetime, end_datetime):
             form.add_error(None, 'Этот столик уже забронирован на выбранное время.')
             return self.form_invalid(form)
 

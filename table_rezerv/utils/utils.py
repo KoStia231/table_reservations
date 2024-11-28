@@ -1,12 +1,10 @@
 from django.core.mail import send_mail
 from django.db.models import Q
-from celery import shared_task
 from config.settings import EMAIL_HOST_USER
 from main.models import Feedback
 from table_rezerv.models import Reservation
 
 
-@shared_task
 def send_email_reservation_to_cancelled(user_email, table, data, time):
     """
         Отправляет уведомление на электронную почту пользователя о том, что его бронь была отменена.
@@ -40,7 +38,7 @@ def is_table_available(table, date, start_datetime, end_datetime) -> bool:
     :param date: Дата бронирования
     :param start_datetime: Начало бронирования
     :param end_datetime: Конец бронирования
-    :return: True, если столик доступен, иначе False
+    :return: True, если столик занят, иначе False
     """
     conflicting_reservations = Reservation.objects.filter(
         Q(table=table) &
@@ -53,4 +51,4 @@ def is_table_available(table, date, start_datetime, end_datetime) -> bool:
         )
     )
 
-    return not conflicting_reservations.exists()  # Если есть пересечение, то False
+    return conflicting_reservations.exists()  # Если есть пересечение, то True
