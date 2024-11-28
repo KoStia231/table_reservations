@@ -13,21 +13,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-      - redis
-    env_file:
-      - .env.prod
-    volumes:
-      - .:/app
-
   celery:
     build:
       context: .
@@ -45,6 +30,29 @@ services:
     depends_on:
       - redis
       - db
+    env_file:
+      - .env.prod
+    volumes:
+      - .:/app
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      bash -c "
+        echo 'Applying migrations...';
+        python manage.py migrate &&
+        echo 'Running load db.json' &&
+        python manage.py loaddata db.json &&
+        echo 'Starting Django server...' &&
+        python manage.py runserver 0.0.0.0:8000
+      "
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
     env_file:
       - .env.prod
     volumes:
