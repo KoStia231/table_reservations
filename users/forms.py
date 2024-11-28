@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 from users.models import User
 
@@ -27,6 +27,7 @@ class UserRegisterForm(CustomFormMixin, UserCreationForm):
             'title': 'Номер телефона без +7 и без 8',
             'required': 'required',
         }),
+        label='Номер телефона'
     )
 
     class Meta:

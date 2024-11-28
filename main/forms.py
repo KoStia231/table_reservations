@@ -34,6 +34,7 @@ class FeedbackForm(forms.ModelForm):
             'title': 'Номер телефона без +7 и без 8',
             'required': 'required',
         }),
+        label='Номер телефона'
     )
 
     class Meta:
@@ -42,6 +43,7 @@ class FeedbackForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Введите ваше имя'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Введите ваш email'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Введите ваш телефон'}),
+            'phone': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Введите ваш телефон без +7, без 8'}),
             'message': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Введите ваше сообщение'}),
         }
