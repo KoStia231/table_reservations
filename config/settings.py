@@ -143,7 +143,9 @@ CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')  # Например, Redis, �
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')  # URL-адрес брокера результатов, также Redis
 CELERY_TIMEZONE = os.getenv('CELERY_TIMEZONE')
 CELERY_TASK_TRACK_STARTED = os.getenv('CELERY_TASK_TRACK_STARTED', False).lower() == 'true'
-CELERY_TASK_TIME_LIMIT = 60 * 60  # Максимальное время на выполнение задачи
+CELERY_TASK_TIME_LIMIT = 300  # Максимальное время на выполнение задачи
+CELERY_WORKER_CONCURRENCY = 1  # 1 воркер для слабого сервера
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1  # очередь на одного воркера
 
 CELERY_BEAT_SCHEDULE = {
     'send-habit-reminders-every-minute': {

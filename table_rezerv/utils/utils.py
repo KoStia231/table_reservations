@@ -1,21 +1,26 @@
 from django.core.mail import send_mail
+from celery import shared_task
 from django.db.models import Q
 from config.settings import EMAIL_HOST_USER
 from main.models import Feedback
 from table_rezerv.models import Reservation
 
 
-def send_email_reservation_to_cancelled(user_email, phone, table, data, time):
+@shared_task
+def send_email_reservation_to_cancelled(user_email, phone, table_pk, data, time):
     """
         Отправляет уведомление на электронную почту пользователя о том, что его бронь была отменена.
         В случае ошибки при отправке письма, создается запись в таблице Feedback с информацией об ошибке.
         :param user_email: Электронная почта пользователя, которому отправляется уведомление
         :param phone: Номер телефона пользователя
-        :param table: Объект модели Table
+        :param table_pk: PK Table
         :param data: Дата брони
         :param time: Время брони
         """
+    from table_rezerv.models import Table
+
     try:
+        table = Table.objects.get(pk=table_pk)
         send_mail(
             subject=f'Информация о бронировании',
             message=f'Ваша бронь столика {table} на дату: {data}, время {time} была автоматически отменена',
