@@ -25,14 +25,14 @@ def send_email_reservation_to_cancelled(user_email, phone, table, data, time):
             recipient_list=[user_email],
         )
     except Exception as e:
-        feedback = Feedback(
+        Feedback.objects.create(
             name='SYSTEM',
             email=user_email,
             phone=phone or 'Не указан',
             message=f'Ошибка при отправке письма о бронировании для столика {table} на {data} в {time}'
                     f'для пользователя {user_email}:\n {str(e)}'
         )
-        feedback.save()
+        print(e)
 
 
 def is_table_available(table, date, start_datetime, end_datetime) -> bool:
