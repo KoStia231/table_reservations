@@ -70,7 +70,10 @@ class UserRegisterView(CreateView):
             recipient_list=[user.email],
         )
 
-        return super().form_valid(form)
+        # return super().form_valid(form)
+        return render(self.request, 'users/register_successfully.html', {
+            'email': user.email
+        })
 
 
 def verify_mail(request, token_auf):
