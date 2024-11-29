@@ -1,4 +1,5 @@
 from django.core.mail import send_mail
+import smtplib
 from celery import shared_task
 from django.db.models import Q
 from config.settings import EMAIL_HOST_USER
@@ -17,17 +18,15 @@ def send_email_reservation_to_cancelled(user_email, phone, table_pk, data, time)
         :param data: Дата брони
         :param time: Время брони
         """
-
+    table = Table.objects.get(pk=table_pk)
     try:
-        table = Table.objects.get(pk=table_pk)
         send_mail(
             subject=f'Информация о бронировании',
             message=f'Ваша бронь столика {table} на дату: {data}, время {time} была автоматически отменена',
             from_email=EMAIL_HOST_USER,
             recipient_list=[user_email],
         )
-    except Exception as e:
-        table = Table.objects.get(pk=table_pk)
+    except smtplib.SMTPException as e:
         Feedback.objects.create(
             name='SYSTEM',
             email=user_email,
