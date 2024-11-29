@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta
 
 from django import forms
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 from users.models import User
 from .models import Reservation, Table
 
 
 class TableFilterForm(forms.Form):
-
     date = forms.DateField(
         initial=datetime.now(),
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'min': datetime.today().date()}),
@@ -41,7 +41,6 @@ class TableFilterForm(forms.Form):
 
 
 class ReservationCreateForm(TableFilterForm, forms.ModelForm):
-
     class Meta:
         model = Reservation
         fields = ['table', 'date', 'time', 'duration', 'status', 'customer']
@@ -77,6 +76,8 @@ class ReservationCreateForm(TableFilterForm, forms.ModelForm):
             self.fields['date'].initial = datetime.now().date()
             self.fields['time'].initial = (datetime.now() + timedelta(minutes=2)).strftime('%H:%M')
 
+        self.fields['duration'].validators.append(MinValueValidator(1))
+        self.fields['duration'].validators.append(MaxValueValidator(24))
         self.fields['duration'].initial = 1
 
 
@@ -88,6 +89,11 @@ class ReservationChangeForm(TableFilterForm, forms.ModelForm):
             'table': forms.Select(attrs={'class': 'form-control'}),
             'duration': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(ReservationChangeForm, self).__init__(*args, **kwargs)
+        self.fields['duration'].validators.append(MinValueValidator(1))
+        self.fields['duration'].validators.append(MaxValueValidator(24))
 
 
 class ReservationConfirmForm(forms.ModelForm):
