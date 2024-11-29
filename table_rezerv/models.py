@@ -20,7 +20,11 @@ class Table(models.Model):
     image = models.ImageField(upload_to='tables/', verbose_name='фото столика', **NULLABLE)
 
     def __str__(self):
-        return f'{self.number}, {self.status}'
+        return f'Столик №{self.number}'
+
+    @property
+    def detailed_info(self):
+        return f'Столик №{self.number} ({self.get_status_display()}), {self.seats} мест'
 
     class Meta:
         verbose_name = 'столик'
@@ -43,8 +47,14 @@ class Reservation(models.Model):
     status = models.CharField(max_length=10, choices=Status.choices, default='pending', verbose_name="Статус брони")
 
     def __str__(self):
-        return f"Бронь: {self.table} для {self.customer} ({self.date} {self.time})"
+        return f"Бронь: {self.table}, дата: ({self.date}, время: {self.time})"
+
+    @property
+    def detailed_info(self):
+        return (f"({self.get_status_display()})  Бронь: {self.table} для {self.customer}, "
+                f"(дата:{self.date}, время: {self.time}), "
+                f"продолжительность {self.duration} час")
 
     class Meta:
-        verbose_name = 'бронь'
-        verbose_name_plural = 'брони'
+        verbose_name = 'Бронь'
+        verbose_name_plural = 'Брони'

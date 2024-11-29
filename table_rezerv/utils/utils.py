@@ -5,11 +5,12 @@ from main.models import Feedback
 from table_rezerv.models import Reservation
 
 
-def send_email_reservation_to_cancelled(user_email, table, data, time):
+def send_email_reservation_to_cancelled(user_email, phone, table, data, time):
     """
         Отправляет уведомление на электронную почту пользователя о том, что его бронь была отменена.
         В случае ошибки при отправке письма, создается запись в таблице Feedback с информацией об ошибке.
         :param user_email: Электронная почта пользователя, которому отправляется уведомление
+        :param phone: Номер телефона пользователя
         :param table: Объект модели Table
         :param data: Дата брони
         :param time: Время брони
@@ -24,9 +25,10 @@ def send_email_reservation_to_cancelled(user_email, table, data, time):
     except Exception as e:
         Feedback.objects.create(
             name='SYSTEM',
-            email=EMAIL_HOST_USER,
-            phone='',
-            message=f'Ошибка при отправке письма о бронировании для столика {table} на {data} в {time}:\n {str(e)}'
+            email=user_email,
+            phone=phone or 'Не указан',
+            message=f'Ошибка при отправке письма о бронировании для столика {table} на {data} в {time}'
+                    f'для пользователя {user_email}:\n {str(e)}'
         )
         print(e)
 

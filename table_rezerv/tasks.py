@@ -23,6 +23,7 @@ def check_reservations():
             # Отправка письма и если ошибка отчет в базе с пометкой SYSTEM
             send_email_reservation_to_cancelled(
                 user_email=reservation.customer.email,
+                phone=reservation.customer.phone,
                 table=table,
                 data=reservation.date,
                 time=reservation.time

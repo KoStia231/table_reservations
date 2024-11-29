@@ -113,5 +113,5 @@ class UserProfileView(MyLoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['reservations'] = Reservation.objects.filter(customer=self.request.user)
+        context['reservations'] = Reservation.objects.filter(customer=self.request.user).order_by('-date', '-time')
         return context

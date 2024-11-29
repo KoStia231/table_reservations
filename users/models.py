@@ -2,7 +2,6 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-
 NULLABLE = {'blank': True, 'null': True}
 
 
@@ -45,8 +44,13 @@ class User(AbstractUser):
     objects = CustomUserManager()
 
     class Meta:
-        verbose_name = 'пользователь'
-        verbose_name_plural = 'пользователи'
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
     def __str__(self):
-        return f"{self.name}|{self.email}|{self.phone}"
+        return f"{self.name}"
+
+    @property
+    def detailed_info(self):
+        return (f"Имя: {self.name}, Почта: {self.email}, Телефон:{self.phone}, "
+                f"{'Активен' if self.is_active else 'Не активен'}")

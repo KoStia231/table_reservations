@@ -12,10 +12,9 @@
                 {% endif %}
             </div>
             <div class="card-body">
-
+            
                 {% for rez in reservations %}
-                    <p class="lead">Бронь {{ rez.pk }}, столик {{ rez.table.number }}, дата {{ rez.date }},
-                        время {{ rez.time }}
+                    <p class="lead">{{ rez }}
                         {% if rez.status == 'pending' %}
                             <span class="badge bg-primary">Ожидает подтверждения</span>
                         {% elif rez.status == 'confirmed' %}
