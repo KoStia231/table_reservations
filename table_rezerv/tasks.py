@@ -24,7 +24,7 @@ def check_reservations():
             send_email_reservation_to_cancelled.delay(
                 user_email=reservation.customer.email,
                 phone=reservation.customer.phone,
-                table=table,
+                table_pk=table.pk,
                 data=reservation.date,
                 time=reservation.time
             )
