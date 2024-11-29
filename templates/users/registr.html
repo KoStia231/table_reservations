@@ -7,8 +7,6 @@
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         {{ form.as_p }}
-                        <h6 class="mt-2">На указанную почту будет отправлено письмо для подтверждения почты <br>
-                            Сообщение может быть в Спам</h6>
                         <div class="d-flex justify-content-center mt-3">
                             <button type="submit" class="btn btn-outline-primary w-110">Регистрация</button>
                         </div>

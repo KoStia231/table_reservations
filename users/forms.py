@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.password_validation import validate_password
 
 from users.models import User
 
@@ -30,12 +31,42 @@ class UserRegisterForm(CustomFormMixin, UserCreationForm):
         label='Номер телефона'
     )
 
+    password1 = forms.CharField(
+        label="Пароль",
+        strip=False,
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        help_text=None,  # Убирает стандартные подсказки
+    )
+    password2 = forms.CharField(
+        label="Подтверждение пароля",
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        strip=False,
+        help_text=None,
+    )
+
     class Meta:
         model = User
-        # Указываем новую кастомную модель
         fields = ('name', 'phone', 'email', 'password1', 'password2')
-        # Меняем поля, так как исходная форма UserCreationForm
-        # ссылается на поле username
+
+    def clean_password1(self):
+        password = self.cleaned_data.get('password1')
+        validate_password(password, self.instance)
+        return password
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("Пароли не совпадают.")
+        return password2
+
+    # оставил старый вариант пусть будет))
+    # class Meta:
+    #     model = User
+    #     # Указываем новую кастомную модель
+    #     fields = ('name', 'phone', 'email', 'password1', 'password2')
+    #     # Меняем поля, так как исходная форма UserCreationForm
+    #     # ссылается на поле username
 
 
 class UserLoginForm(CustomFormMixin, AuthenticationForm):
