@@ -32,7 +32,8 @@ class IndexView(CreateView):
     def form_valid(self, form):
         """Обработка и сохранение формы с валидацией номера телефона"""
         if self.request.user.is_authenticated:
-            return redirect(self.get_success_url())
+            return super().form_valid(form)
+            # return redirect(self.get_success_url())
         else:
             if form.is_valid():
                 feedback = form.save(commit=False)
