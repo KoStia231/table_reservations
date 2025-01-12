@@ -5,7 +5,7 @@ from pathlib import Path
 from celery.schedules import crontab
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path='.env.prod')  # для docker .env.prod без docker .env
+load_dotenv(dotenv_path='.env')  # для docker .env.prod без docker .env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -15,6 +15,8 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = os.getenv('DJANGO_DEBUG', False).lower() == 'true'
 
 ALLOWED_HOSTS = [host.strip() for host in os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',') if host.strip()]
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
 
 MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
