@@ -17,6 +17,11 @@ DEBUG = os.getenv('DJANGO_DEBUG', False).lower() == 'true'
 ALLOWED_HOSTS = [host.strip() for host in os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',') if host.strip()]
 if not DEBUG:
     CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_DOMAIN = ALLOWED_HOSTS[0]
+    CSRF_COOKIE_DOMAIN = ALLOWED_HOSTS[0]
+    SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+    SESSION_COOKIE_AGE = 3600
 
 MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
